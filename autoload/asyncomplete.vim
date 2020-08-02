@@ -137,9 +137,23 @@ function! asyncomplete#context() abort
     return l:ret
 endfunction
 
+" comment out to fix enter key
+" function! s:on_insert_enter() abort
+"     call s:get_active_sources_for_buffer() " call to cache
+"     call s:update_trigger_characters()
+" endfunction
+
+" My way to work around problem of enter key on neovim while using asyncomplete.
+let g:fixEnterKeyForNvim = 1
 function! s:on_insert_enter() abort
     call s:get_active_sources_for_buffer() " call to cache
     call s:update_trigger_characters()
+
+    if g:fixEnterKeyForNvim
+        " Fix enter key
+        inoremap <expr> <CR> pumvisible() ? asyncomplete#close_popup() . "\<CR>" : "\<CR>"
+        let fixEnterKeyForNvim = 0
+    endif
 endfunction
 
 function! s:on_insert_leave() abort
